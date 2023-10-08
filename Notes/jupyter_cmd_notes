@@ -1,0 +1,5 @@
+# Convert jpy notebook to script
+jupyter nbconvert --to=script upload-data.ipynb
+
+# Open Jupyter notebook on specific dir
+jupyter notebook --notebook-dir="C:\Course Documents\DE_Zoomcamp\Docker"
