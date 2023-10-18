@@ -1,0 +1,61 @@
+# Steps to make VM in general
+# Create SSH keys - google create ssh keys gcp
+# In GCP --> go to compute engine --> metadata --> add public key there
+# Once VM is generated use:
+
+ssh -i ~./ssh/gcp *user name*@*VMhostname*
+
+# Other wise create config
+
+touch config #Create new config
+
+#example ssh config file
+Host de-zoomcamp
+    HostName *Insert VM IP*
+    User alysis *Insert username*
+    IdentityFile *Insert location of private key*
+
+less .bashrc # view bashrc
+source .bashrc # rerun bashrc
+
+# docker without sudo
+sudo groupadd docker
+sudo gpasswd -a $USER docker
+sudo service docker restart
+surce .bashrc #restart .bashrc
+
+# download docker compose
+wget *insert link to docker compose* -O docker-compose
+mkdir bin # put docker into bin as an executable
+chmod +x docker-compose # change the downloaded file into an executable
+nano .bashrc #add to path
+source .bashrc #restart bash rc
+
+# add following into .bashrc to add bin folder to path
+export PATH="${HOME}/bin:${PATH}"
+
+# install terraform
+wget *terraform link here*
+unzip terraform
+
+# To move files from local to remote using sftp
+cd *insert folder path of the key*
+sftp de-zoomcamp
+mkdir .gc # Keys have to put in .gc folder
+put *insert name of key*
+
+# setting up gcp with the new key
+export GOOGLE_APPLICATION_CREDENTIALS=~/.gc/*name of key*
+gcloud auth activate-service-account --key-file $GOOGLE_APPLICATION_CREDENTIALS # authenticate
+
+
+# terraform cmds
+terraform init
+terraform plan
+terraform apply
+
+# shutdown ssh computer
+sudo shutdown now
+
+# Note that next time VM is started, new hostname will be generated for that ssh computer
+# Hence need to update config file in .ssh

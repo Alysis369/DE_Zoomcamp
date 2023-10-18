@@ -40,16 +40,16 @@ docker network create pg-network
 docker stop $(docker ps -a -q)
 
 # Docker build custom 
-docker build -t taxi_ingest:v003 DE_Zoomcamp
+docker build -t taxi_ingest:v001 DE_Zoomcamp
 
 
 # Docker run python ingestion code in docker
 docker run -it \
-    --network pg-network \
-    taxi_ingest:v003 \
+    --network de_zoomcamp_default \
+    taxi_ingest:v001 \
         --user=root \
         --password=root \
-        --host=pg-database \
+        --host=pgdatabase \
         --port=5432 \
         --db=ny_taxi \
         --table_name=yellow_taxi_trips \
