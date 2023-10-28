@@ -1,0 +1,64 @@
+## Create Dockerfile Image
+
+FROM prefecthq/prefect:2.7.7-python3.9
+
+COPY docker-requirements.txt .
+
+RUN pip install -r docker-requirements.txt --trusted-host pypi.python.org --no-cache-dir
+
+COPY flows /opt/prefect/flows
+COPY data /opt/prefect/data
+
+
+## Create docker-requirements.txt
+pandas==1.5.2
+prefect-gcp[cloud_storage]==0.2.4
+protobuf==4.21.11
+pyarrow==10.0.1
+
+## Build the iamge local
+docker image build -t alysis369/prefect:de-zoomcamp .
+
+## Store container in docker hub
+docker image push alysis369/prefect:de-zoomcamp
+
+# Create docker block on prefect
+Image Name -> local docker image name (i.e. alysis369/prefect:de-zoomcamp)
+dockerpull -> ALWAYS
+Auto Remove -> ALWAYS
+
+# Run docker deployment python script to specify docker container and the entrypoint
+from prefect.deployments import Deployment
+from parameterized_flow import etl_parent_flow
+from prefect.infrastructure.docker import DockerContainer
+
+docker_block = DockerContainer.load("zoom")
+
+docker_dep = Deployment.build_from_flow(
+    flow=etl_parent_flow,
+    name="docker-flow",
+    infrastructure=docker_block,
+)
+# Run the code, deployment should appear on orion
+
+
+if __name__ == "__main__":
+    docker_dep.apply()
+
+# Ensuring prefect is using local orion, not prefect cloud
+prefect profile ls # Checks which profile are we using currently
+prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api" # set the prefect API endpoint to local
+prefect config set PREFECT_API_URL="http://127.0.0.1:4200/api"
+
+# Run the deployment
+prefect agent start -q default # on another terminal to start the agent on default workqueue
+prefect deployment run {name of deployment (i.e etl-parent-flow/docker-flow)} -p "{parameters i.e months=[1,2]}" 
+
+##### Debugging #####
+- Flow run infrastructure exited with non-zero status code 1 -> need to specify API endpoint, otherwise assumes looking at prefect cloud
+- Directory not found -> ImageName in block is mistaken
+- File not found -> File to be ran have to be directly under the flows folder
+- Docker image discrepancy -> Deployment always pulls most recent image out of dockerhub
+- path does not exist in gcs -> erase cache in flow description in the script
+
+

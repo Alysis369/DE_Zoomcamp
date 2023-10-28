@@ -78,3 +78,4 @@ df.to_gbq(destination_table={table name}
 prefect deployment build {filename}:{flow entrypoint in the script} -n "{insert deployment name}" #creates yaml file
 # Can adjust the parameters inside the yaml file
 prefect deployment apply {insert name of the yaml file}
+
