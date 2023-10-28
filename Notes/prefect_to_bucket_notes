@@ -1,0 +1,80 @@
+# Using Conda
+
+# Create Prefect Environment
+conda create -n zoomcamp python=3.9
+conda activate {insert prefect environment}
+
+# PIP loading requirements from txt files
+pip install -r requirements.txt
+
+# Launching Orion UI 
+prefect orion start
+
+
+
+# Python import prefect libraries
+from prefect import flow, task
+from prefect_gcp.cloud_storage import GcsBucket
+
+# Python flow, taks decorators
+@flow(retries=3) #If a raise occurs, retry the flow
+@task(log_prints=True) # If a print is done, stores in log
+
+
+
+
+
+##### From Prefect raw file to gcp bucket #####
+
+# Create a bucket in google cloud storage
+# Insert gcp module into python
+prefect block register -m prefect_gcp
+
+# In orion, go to block and get the gcs bucket block
+# The name of the bucket should be the name of the bucket from gcp
+# Create GCP credentials to give service account into the block
+IAM Admin -> Service Account -> Create service account
+Permissions: BigQuery Admin, Storage Admin
+Create Key -> insert key into bucket block in prefect
+
+
+# Sending a file from path to GCS bucket python implementation
+# More information in prefect documentation
+gcs_block = GcsBucket.load("zoom-gcs") # Name of gcs block in prefect
+gcs_block.upload_from_path(from_path=f"{path}", to_path= path)
+
+
+
+
+
+
+##### From Bucket (parquet) to BigQuery #####
+# Extracting files from the bucket
+gcs_path = ...
+gcs_block = GcsBucket.load({prefect_gcs_block_name})
+gcs_block.get_directory(from_path=gcs_path, local=f"../data/")
+
+# write to google big query
+
+# create a big query
+go to google cloud -> bigquery -> add data -> google cloud storage -> dataset: create dataset
+
+# Get the credentials from prefect block
+gcp_credentials_block = GcpCredentials.load({gcp credential block})
+# python to gbq
+df.to_gbq(destination_table={table name}
+          project_id={gcp project name}
+          credentials=gcp_credentials_block.get_credentials_from_service_account()
+          chunksize=50000
+          if_exists='append'
+          )
+
+
+
+
+
+#### Parameterizing flow script #####
+# deployment of script into scheduled
+prefect deployment build {filename}:{flow entrypoint in the script} -n "{insert deployment name}" #creates yaml file
+# Can adjust the parameters inside the yaml file
+prefect deployment apply {insert name of the yaml file}
