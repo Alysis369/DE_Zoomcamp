@@ -1,0 +1,10 @@
+#### Progress ####
+- Added green trip data into gcs data lake
+- Created BQ table for yellow and green trip data
+
+#### Debugging ####
+- GCS upload timeout, added timeout=300 to kwargs for prefect gcs upload
+- added green trip data support -> added mkdir green data folder to dockerfile, added pep code to clean() function
+- added retries to to_gcs funciton on prefect
+- added title logging to prefect parent flow to keep track
+- lacking permission to access yellow trip data from gcs - added storage admin, storage object admin to private account permissions
