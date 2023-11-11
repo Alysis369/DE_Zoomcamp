@@ -1,0 +1,103 @@
+### Start
+Create folders under model for staging and core (final prod file)
+
+### Create staging dbt file (stg_green_tripdata.sql)
+{{ config(materialized='view) }} ## This jinja made sure of the final type
+
+select 
+
+{{ dbt_utils.surrogate_key(['vendorid', 'lpep_pickup_datetime'])}} as tripid,
+
+{insert different casting here}
+
+{{ get_payment_type_description(payment_type)}} as payment_type_description ## Using macros
+
+from {{ source('staging', 'green_tripdata') }} ## This will reference our datasource link
+
+
+### Define our sources in bq
+version: 2
+
+sources:
+    - name: staging
+        database: taxi-rides-ny-339013 # dataset in bq
+        schema: trips_data_all  # schema in bq
+
+        tables:
+            - name: green_tripdata
+            - name: yellow_tripdata
+
+### Running DBT
+dbt run -m {insert model name here} ##ex. dbt run -m stg_green_tripdata
+dbt run ## run all module in the project
+
+dbt dep ## download all dependencies for the project i.e. packages
+
+dbt run --select stg_green_tripdata --vars 'is_test_run: false' ## running with custom variable
+
+dbt seed ## Loads the seed in to table form, if csv files is changed, the changed row will append
+
+dbt seed --full-refresh ## This will completely renew the seed table without appending
+
+dbt build ## similar to dbt run, but this includes seeds as well
+
+dbt build --select +fact_trips ## Run everything that fact_trips's dependencies, then run fact_trips finally
+
+
+### Macros (functions that return a logic/code)
+Save this inside under the macro folder -> get_payment_type_description.sql
+
+ {#
+    This macro returns the description of the payment_type ## This is just documentation for the macro
+#}
+
+{% macro get_payment_type_description(payment_type) -%}
+
+    case {{ payment_type }}
+        when 1 then 'Credit card'
+        when 2 then 'Cash'
+        when 3 then 'No charge'
+        when 4 then 'Dispute'
+        when 5 then 'Unknown'
+        when 6 then 'Voided trip'
+    end
+
+{%- endmacro %}
+
+## Packages 
+Save this under the main folder, under packages.yml
+
+packages:
+  - package: dbt-labs/dbt_utils
+    version: 0.8.0
+
+
+## Variables 
+Add immediately in the model
+
+{% if var('is_test_run', default=true) %}
+
+  limit 100
+
+{% endif %}
+
+
+## Seed
+CSV files that does not change that often
+if using dbt cloud, in order to upload, need to push to github, upload csv to github under the seeds folder, then repull
+
+it will auto guess the datatype of the csv columns, but if want to define ourselves, can edit the dbt_project.yml file
+
+seeds:
+    taxi_rides_ny:
+        taxi_zone_lookup:
+            - column_types:
+                locationid: numeric
+
+
+
+
+
+#### DEBUGGING
+- unable to find table in bq from dbt during dbt run -> have to remake the dataset in bq to match the region specified in the dbt run log
+- make sure that the file in bq has the same exact name as your default dbt name -
