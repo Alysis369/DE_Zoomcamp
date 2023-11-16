@@ -1,0 +1,11 @@
+## Create a production environment
+- Go to environments
+- For the dataset, point it into your production dataset in your BQ
+
+## Create a job
+- Create a new job
+- use the environment production
+- target name is default (means the default target dataset from the prod environment)
+- we can add multiple commands as we wish
+- triggers can be schedule or based on pull request of the github repo
+

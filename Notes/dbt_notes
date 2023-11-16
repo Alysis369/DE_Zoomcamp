@@ -95,6 +95,40 @@ seeds:
                 locationid: numeric
 
 
+## Testing and documentation
+at the schema.yml, can add models/columns under name for documentation purposes
+models:
+    - name: .......
+      production: 
+        ......
+      columns:
+        - name: ......
+          description:
+            ......
+            tests:
+                - unique:
+                    severity: warn
+                - not_null:
+                    severity: warn
+
+on testing, it will run the schema.yml to run all the test
+
+dbt test # will test the tests only
+dbt build # will run all the files, models but also the tests.
+
+## Documentation
+you can request the documentation of your models, seeds and macro
+the documentation is all defined in their respective schema.yml files
+
+## Variable                  
+In the schema.yml, might want to use a definted variable from the project yml file
+"{{ var("payament_type_values")}}"
+
+in the project yml
+under models add:
+
+vars:
+     payment_type_values: [1,2,3,4,5,6]
 
 
 
