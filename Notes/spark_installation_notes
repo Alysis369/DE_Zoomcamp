@@ -1,0 +1,21 @@
+## Installation of spark on VM linux
+- spark requires java to operate, download java version 8 or 11 only
+- download with wget, extract then add the extracted directory into a variable
+- try using the oldest spark, with hadoop 3.2
+
+## Downloadig Java/Spark
+wget {insert link into the right spark/java}
+tar xzfv {name of the .tgz file} # This extracts the .tgz file
+
+## Adding Java to path
+
+export JAVA_HOME="${HOME}/spark/jdk-11.0.2"
+export PATH="${JAVA_HOME}/bin:${PATH}"
+
+export SPARK_HOME="${HOME}/spark/spark-3.2.4-bin-hadoop3.2"
+export PATH="${SPARK_HOME}/bin:${PATH}"
+
+## Adding spark's python library to python path, otherwise python would not be able to import spark
+export PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
+export PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.9.5-src.zip:$PYTHONPATH"
+

@@ -1,0 +1,8 @@
+##### PROGRESS #####
+- Finished DataStudio class
+- Finished Metabase class
+- Setup spark and run test script
+
+
+##### DEBUGGING #####
+- bashrc is empty -> bashrc has to be accessed from home directory

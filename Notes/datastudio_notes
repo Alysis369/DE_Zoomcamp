@@ -1,0 +1,13 @@
+- Add source from big query
+
+## Plotting graphs
+- Create a time series of data
+- Can add controls to limit the date range of the time series plot
+
+
+## Dimensions and metrics
+- Add dimension (how we are grouping the metrics, x-axis) and metrics (what we actually want to count, y-axis)
+- If there is a field that we want that do not exist (per month instead of datetime), we can make a field
+- Uuse dimension breakdown to further breakdown a dimension (ex. have a data bby month, but would like to specify the year range in which the data is being calculated)
+
+## Metabase is opensource version of datastudio, can run on local postgres

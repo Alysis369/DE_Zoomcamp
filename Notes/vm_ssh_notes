@@ -22,7 +22,7 @@ source .bashrc # rerun bashrc
 sudo groupadd docker
 sudo gpasswd -a $USER docker
 sudo service docker restart
-surce .bashrc #restart .bashrc
+source .bashrc #restart .bashrc
 
 # download docker compose
 wget *insert link to docker compose* -O docker-compose
