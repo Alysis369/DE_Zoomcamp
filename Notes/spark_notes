@@ -1,0 +1,45 @@
+## spark essential imports to bulid spark sessions
+import pyspark
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder \
+    .master("local[*]") \
+    .appName('test') \
+    .getOrCreate()
+
+## Spark read csv to df
+df = spark.read \
+     .option("header", "true") \
+     .csv('fhvhv_tripdata_2021-01.csv.gz')
+
+## show what the df is
+df.show()
+df.head(5)
+df.schema ## Shows what the data structure is for the df
+
+## Create df from pandas
+spark.createDataFrame(df_pandas).show()
+
+## Spark doesnt get iteritems until Spark3.4
+df.iteritems = df.items
+
+## Use python to figure out the recommended datatypes form pandas
+!head {name of the csv file} > head.csv
+# Use this starting point as to edit the remaining data types
+# Create pythonized datatype declaration, True indicates if it's nullable
+from spark.sql import types
+schema = types.StructType([
+    types.StructField('hvfhs_license_num', types.StringType(), True),
+    types.StructField('dispatching_base_num', types.StringType(), True),
+    types.StructField('pickup_datetime', types.TimestampType(), True),
+    types.StructField('dropoff_datetime', types.TimestampType(), True),
+    types.StructField('PULocationID', types.IntegerType(), True),
+    types.StructField('DOLocationID', types.IntegerType(), True),
+    types.StructField('SR_Flag', types.StringType(), True)
+])
+# then using the defined, recall the csv into spark df
+
+## Repartition the spark df to be split into multiple smaller partition
+df.partition({insert number of partitions})
+# Will not apply until you execute (ex. write as parquet)
+df.write.parquet('fhvhv/2021/01') # would not like a if a folder exist, unless added mode='override'

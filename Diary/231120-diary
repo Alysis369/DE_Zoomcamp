@@ -1,0 +1,8 @@
+##### PROGRESS #####
+Finished first look at spark
+
+##### DEBUGGING #####
+unable to find module pyspark -> close noteboook, disconnect port fwd, rerun python environment, open notebook from new terminal
+spark unable to create df from pandas -> spark only support iterrows -> df.iteritems = df.items
+spark unable to find tuple -> incompatible with python 3.11++ -> create conda environment with 3.10 (python310) -> open notebook from the env
+
