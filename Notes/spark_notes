@@ -43,3 +43,33 @@ schema = types.StructType([
 df.partition({insert number of partitions})
 # Will not apply until you execute (ex. write as parquet)
 df.write.parquet('fhvhv/2021/01') # would not like a if a folder exist, unless added mode='override'
+
+## read back the parquet file
+df = spark.read.parquet('fhvhv/2021/01/')
+
+## display the schema of spark df neatly
+df.printSchema()
+
+## Select columns and filter
+df.select('pickup_datetime', 'dropoff_datetime', 'PULocationID', 'DOLocationID') \
+  .filter(df.hvfhs_license_num == 'HV0003') \
+  .show()
+# select and filter are lazy and is not executed immediately (transformation), and there is show that is executed immediately (actions)
+
+## Import spark native functions
+from pyspark.sql import functions as F
+
+## Add columns
+df \
+    .withColumn('pickup_date', F.to_date(df.pickup_datetime)) \
+    .withColumn('dropoff_date', F.to_date(df.dropoff_datetime)) \
+    .show()
+
+## Add custom functions
+# Define the functions
+def crazy_stuff(base_num):
+    ....
+    return ....
+# define it as spark udf
+crazy_stuff_udf = F.udf(crazy_stuff, returnType=types.StringType())
+

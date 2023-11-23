@@ -1,0 +1,47 @@
+## Download the raw files into a folder
+# Create a shell script to downlaod all the necessary green/yellow raw data
+# Run the script for 2020 and 2021 data
+# To see tree strucure of the folder
+sudo apt-get install tree
+tree {insert folder name here}
+
+## Convert file to parquet files in the right schema
+# Load data using pandas for the first 1000 rows
+# Convert the df to sparkdf to get the schema draft
+# Pull schema draft into vscode, edit to add types, and edit schema
+types.StructType([
+    types.StructField('VendorID',types.IntegerType(),True),
+    types.StructField('tpep_pickup_datetime',types.TimestampType(),True),
+    types.StructField('tpep_dropoff_datetime',types.TimestampType(),True),
+    types.StructField('passenger_count',types.IntegerType(),True),
+    types.StructField('trip_distance',types.DoubleType(),True),
+    types.StructField('RatecodeID',types.IntegerType(),True),
+    types.StructField('store_and_fwd_flag',types.StringType(),True),
+    types.StructField('PULocationID',types.IntegerType(),True),
+    types.StructField('DOLocationID',types.IntegerType(),True),
+    types.StructField('payment_type',types.IntegerType(),True),
+    types.StructField('fare_amount',types.DoubleType(),True),
+    types.StructField('extra',types.DoubleType(),True),
+    types.StructField('mta_tax',types.DoubleType(),True),
+    types.StructField('tip_amount',types.DoubleType(),True),
+    types.StructField('tolls_amount',types.DoubleType(),True),
+    types.StructField('improvement_surcharge',types.DoubleType(),True),
+    types.StructField('total_amount',types.DoubleType(),True),
+    types.StructField('congestion_surcharge',types.DoubleType(),True)]
+    )
+# Save schema into a variable
+# reiterate process to get the full csv files for each month, repartition (since repartition is gone when .gz is loaded), and then writeParquet into a folder (do not need to specify the name since it will be split into 4 sections based on the partition size)
+year = 2021
+for month in range(1,13):
+    
+    input_path = f'data/raw/green/{year}'
+    output_path = f'data/pq/green/{year}/{month:02d}'
+    
+    df_green = spark.read \
+        .option("header", "true") \
+        .schema(green_schema) \
+        .csv(f'{input_path}/green_tripdata_{year}-{month:02d}.csv.gz')
+    
+    df_green \
+        .repartition(4) \
+        .write.parquet(output_path)
