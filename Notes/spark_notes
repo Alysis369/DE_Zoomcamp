@@ -73,3 +73,9 @@ def crazy_stuff(base_num):
 # define it as spark udf
 crazy_stuff_udf = F.udf(crazy_stuff, returnType=types.StringType())
 
+# Combining two dfs
+df_trips_data = df_green_sel.unionAll(df_yellow_sel)
+
+# Groupby
+df_trips_data.groupby('service_type').count().show()
+

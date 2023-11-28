@@ -1,0 +1,10 @@
+# Registering a spark df into a temporary table
+df_trips_data.registerTempTable('trips_data')
+
+# Run SQL like query
+spark.sql("""
+SELECT * FROM trips_data LIMIT 10;
+""").show()
+
+# Write to parquet, coalesce is similar to repartition, but to reduce the number of partition
+df_result.coalesce(1).write.parquet('data/report/revenue/', mode='overwrite')
