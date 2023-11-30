@@ -8,3 +8,11 @@ SELECT * FROM trips_data LIMIT 10;
 
 # Write to parquet, coalesce is similar to repartition, but to reduce the number of partition
 df_result.coalesce(1).write.parquet('data/report/revenue/', mode='overwrite')
+
+# joining tables
+df_join = df_green_revenue.join(df_yellow_revenue, on=['hour', 'zone'], how='outer')
+# if joining tables with a different column name
+df_result = df_join.join(df_zones, df_join.zone == df_zones.LocationID)
+
+# Drop a column
+df_result.drop('LocationID')
