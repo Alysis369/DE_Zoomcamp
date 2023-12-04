@@ -1,0 +1,7 @@
+#### Progress ####
+Finished lectures on spark RDDs
+Connected spark to gcp
+Spark notebook to script, setting up spark master on GCP and running script
+
+#### Debugging ####
+java.lang.RuntimeException: java.lang.ClassNotFoundException: Class com.google.cloud.hadoop.fs.gcs.GoogleHadoopFileSystem not found -> not running python310
